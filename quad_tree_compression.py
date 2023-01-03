@@ -176,24 +176,6 @@ class ImageCompressor:
             if i > max_iterations:
                 break
 
-    def ensure_max_detail_error(self, max_detail_error: float, max_iterations: int = None):
-        iterations = 0
-
-        while self.areas:
-            node_with_most_detail = self.areas.pop()
-
-            for node in node_with_most_detail.subdivide():
-                if node.detail > max_detail_error:
-                    self.areas.add(node)
-
-            iterations += 1
-            if max_iterations is not None and iterations > max_iterations:
-                break
-
-            # if iterations % 1000 == 0:
-            #     print(iterations, end="\r")
-            print(iterations)
-
     def draw(self):
         new_image_data = np.zeros(self._image_shape, dtype=np.uint8)
         self.root_node.draw(new_image_data)
@@ -206,6 +188,10 @@ class ImageCompressor:
         self.root_node.extract_data(subdivided_flags, colors)
 
         return subdivided_flags, colors
+
+    def encode_to_binary(self) -> bytes:
+        subdivided_flags, colors = self.extract_data()
+        return encode_image_data(self.width, self.height, subdivided_flags, colors)
 
 
 # Encoding / Decoding
@@ -309,13 +295,8 @@ def decode_image_data(compressed: bytes) -> tuple:
 
 def compress_image_data(image_data: np.array, iterations: int = 20000, detail_error_threshold: float = 10) -> bytes:
     compressor = ImageCompressor(image_data)
-
     compressor.add_detail(iterations, detail_error_threshold)
-
-    width = compressor.width
-    height = compressor.height
-    subdivided_flags, colors = compressor.extract_data()
-    return encode_image_data(width, height, subdivided_flags, colors)
+    return compressor.encode_to_binary()
 
 
 def reconstruct_image_data(data: bytes) -> np.array:
@@ -330,23 +311,43 @@ def reconstruct_image_data(data: bytes) -> np.array:
     return image_data
 
 
+# Simpler API
+
+def compress_image_file(
+        image_path: str,
+        output_path: str,
+        iterations: int = 20000,
+        detail_error_threshold: float = 10):
+
+    image = Image.open(image_path)
+    image_data = np.array(image)
+
+    data = compress_image_data(image_data, iterations, detail_error_threshold)
+
+    with open(output_path, "wb") as file:
+        file.write(data)
+
+
+def reconstruct_image_from_file(compressed_image_file: str) -> Image:
+    with open(compressed_image_file, "rb") as file:
+        data = file.read()
+
+    image_data = reconstruct_image_data(data)
+    return Image.fromarray(image_data)
+
+
 image = Image.open("input/penguins.jpg")
 image_data = np.array(image)
 
 compressor = ImageCompressor(image_data)
-
 compressor.add_detail(80000)
-# compressor.ensure_max_detail_error(200000)
-
 Image.fromarray(compressor.draw()).show("Compressed")
 
-width = compressor.width
-height = compressor.height
-subdivided_flags, colors = compressor.extract_data()
-blob = encode_image_data(width, height, subdivided_flags, colors)
-# print(blob)
+# Compress
+blob = compressor.encode_to_binary()
 print(len(blob))
 
+# Reconstruct
 image_data = reconstruct_image_data(blob)
 Image.fromarray(image_data).show("Reconstructed")
 
@@ -357,3 +358,5 @@ Image.fromarray(image_data).show("Reconstructed")
 # Benchmark:
 # Measure difficulty of image (entropy / randomness of image)
 # Measure similarity to original
+
+# TODO: Add credit for images
