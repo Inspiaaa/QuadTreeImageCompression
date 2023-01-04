@@ -293,7 +293,21 @@ def decode_image_data(compressed: bytes) -> tuple:
 
 # Top-level compression and reconstruction functions
 
-def compress_image_data(image_data: np.array, iterations: int = 20000, detail_error_threshold: float = 10) -> bytes:
+def compress_image_data(
+        image_data: np.array,
+        iterations: int = 20000,
+        detail_error_threshold: float = 10) -> np.array:
+
+    compressor = ImageCompressor(image_data)
+    compressor.add_detail(iterations, detail_error_threshold)
+    return compressor.draw()
+
+
+def compress_and_encode_image_data(
+        image_data: np.array,
+        iterations: int = 20000,
+        detail_error_threshold: float = 10) -> bytes:
+
     compressor = ImageCompressor(image_data)
     compressor.add_detail(iterations, detail_error_threshold)
     return compressor.encode_to_binary()
@@ -322,7 +336,7 @@ def compress_image_file(
     image = Image.open(image_path)
     image_data = np.array(image)
 
-    data = compress_image_data(image_data, iterations, detail_error_threshold)
+    data = compress_and_encode_image_data(image_data, iterations, detail_error_threshold)
 
     with open(output_path, "wb") as file:
         file.write(data)
@@ -334,22 +348,6 @@ def reconstruct_image_from_file(compressed_image_file: str) -> Image:
 
     image_data = reconstruct_image_data(data)
     return Image.fromarray(image_data)
-
-
-image = Image.open("input/penguins.jpg")
-image_data = np.array(image)
-
-compressor = ImageCompressor(image_data)
-compressor.add_detail(80000)
-Image.fromarray(compressor.draw()).show("Compressed")
-
-# Compress
-blob = compressor.encode_to_binary()
-print(len(blob))
-
-# Reconstruct
-image_data = reconstruct_image_data(blob)
-Image.fromarray(image_data).show("Reconstructed")
 
 
 # TODO: Create benchmark (compression ratio)
