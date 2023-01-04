@@ -1,11 +1,24 @@
+
+# Path Handling
+import os.path
+from pathlib import Path
+
+# Entropy calculation
+from skimage.filters.rank import entropy as sk_entropy
+from skimage.morphology import disk as sk_disk
+from skimage.color import rgb2gray
+
+# Image processing and maths
+import numpy as np
 import math
+from PIL import Image
+import quad_tree_compression as qtc
+
+# "Virtual files" for estimating size of image
 from io import BytesIO
 
-import numpy as np
-from PIL import Image
+# String formatting
 from tabulate import tabulate
-
-import quad_tree_compression as qtc
 
 
 def get_image_file_size(image: Image, format: str = "png"):
@@ -40,29 +53,20 @@ def compute_image_similarity(image_a: np.array, image_b: np.array) -> float:
 
 
 def compute_image_entropy(image: np.array, radius=5) -> float:
-    from skimage.filters.rank import entropy as sk_entropy
-    from skimage.morphology import disk as sk_disk
-    from skimage.color import rgb2gray
-
-    gray = rgb2gray(image)
+    gray = (rgb2gray(image) * 255).astype(np.uint8)
     local_entropy = sk_entropy(gray, sk_disk(radius))
     entropy = np.mean(local_entropy)
-
-    # from skimage.io import imshow
-    # imshow(local_entropy)
-    # import matplotlib.pyplot as plt
-    # plt.show()
-
     return float(entropy)
 
 
 def benchmark_image(image_path: str, iteration_counts: list):
-    title = f"Image '{image_path}'"
+    image_name = Path(image_path).stem
+    title = f"Image '{image_name}'"
     print(title)
     print("=" * len(title))
 
     image = Image.open(image_path)
-    image_data = np.array(image)
+    image_data = np.array(image, dtype=np.uint8)
 
     png_size = get_image_file_size(image, "png")
     jpg_size = get_image_file_size(image, "jpeg")
@@ -84,14 +88,10 @@ def benchmark_image(image_path: str, iteration_counts: list):
         last_iteration_count = iteration_count
 
         compressed_size = len(compressor.encode_to_binary())
-        compressed_image = compressor.draw()
+        compressed_image_data = compressor.draw()
+        Image.fromarray(compressed_image_data).save(os.path.join(f"output/{image_name}_{iteration_count}.jpg"))
 
-        # similarity_to_uncompressed = compute_image_similarity(image_data, compressed_image)
-        # print(similarity_to_uncompressed)
-        # print(mean_average_error(image_data, compressed_image))
-        # print(root_mean_squared_error(image_data, compressed_image))
-
-        error = mean_average_error(image_data, compressed_image)
+        error = mean_average_error(image_data, compressed_image_data)
         size_reduction_png = (png_size - compressed_size) / png_size
         size_reduction_jpg = (jpg_size - compressed_size) / jpg_size
         compression_factor_png = png_size / compressed_size
