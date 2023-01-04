@@ -1,0 +1,8 @@
+plant.jpg: Photo by Adrian Swancar on Unsplash
+flowers.jpg: Photo by Lucía Garó on Unsplash
+mountain.jpg: Photo by Neha Maheen Mahfin on Unsplash
+night.jpg: Photo by Vladyslav Tobolenko on Unsplash
+penguins.jpg: Photo by Birger Strahl on Unsplash
+sunset.jpg: Photo by Farid Mardanov on Unsplash
+computer.jpg: Photo by Mailchimp on Unsplash
+hiking.jpg: Photo by Maddie Steele on Unsplash
