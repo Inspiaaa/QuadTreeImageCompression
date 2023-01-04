@@ -62,6 +62,7 @@ def compute_image_entropy(image: np.array, radius=5) -> float:
 def benchmark_image(image_path: str, iteration_counts: list):
     image_name = Path(image_path).stem
     title = f"Image '{image_name}'"
+    print("=" * len(title))
     print(title)
     print("=" * len(title))
 
@@ -71,12 +72,14 @@ def benchmark_image(image_path: str, iteration_counts: list):
     png_size = get_image_file_size(image, "png")
     jpg_size = get_image_file_size(image, "jpeg")
 
+    print()
     print(tabulate([
         ["PNG", f"{(png_size / 1000):,.1f}"],
         ["JPG (90% quality)",  f"{(jpg_size / 1000):,.1f}"]
     ], headers=["File Type", "Size (KB)"], stralign="right"))
 
     entropy = compute_image_entropy(image_data)
+    print()
     print(tabulate([["Entropy", f"{entropy:.3f}"]]))
 
     compressor = qtc.ImageCompressor(image_data)
@@ -107,6 +110,7 @@ def benchmark_image(image_path: str, iteration_counts: list):
             f"{compression_factor_jpg:.2f}"
         ])
 
+    print()
     print(tabulate(results_table, headers=[
         "Iterations",
         "Compressed\nSize (KB)",
@@ -116,8 +120,19 @@ def benchmark_image(image_path: str, iteration_counts: list):
         "Compression\nFactor PNG",
         "Compression\nFactor JPG",
     ], stralign="right"))
+    print()
+    print()
+    print()
 
 
-# benchmark_image("input/flowers.jpg", iteration_counts=[100, 1000, 20000, 80000])
-# benchmark_image("input/bug.png", iteration_counts=[100, 1000, 20000, 80000])
-benchmark_image("input/flowers.jpg", iteration_counts=[100, 1000, 20000, 80000])
+if __name__ == '__main__':
+    detail_levels = [100, 1000, 20000, 80000]
+    benchmark_image("input/flowers.jpg", iteration_counts=detail_levels)
+    benchmark_image("input/mountain.jpg", iteration_counts=detail_levels)
+    benchmark_image("input/night.jpg", iteration_counts=detail_levels)
+    benchmark_image("input/penguins.jpg", iteration_counts=detail_levels)
+    benchmark_image("input/plant.jpg", iteration_counts=detail_levels)
+    benchmark_image("input/squares.png", iteration_counts=detail_levels)
+    benchmark_image("input/hiking.jpg", iteration_counts=detail_levels)
+    benchmark_image("input/sunset.jpg", iteration_counts=detail_levels)
+    benchmark_image("input/computer.jpg", iteration_counts=detail_levels)

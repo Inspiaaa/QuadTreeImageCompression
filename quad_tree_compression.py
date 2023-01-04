@@ -164,7 +164,7 @@ class ImageCompressor:
     def add_detail(self, max_iterations: int = 1, detail_error_threshold: float = 100):
         iterations = 0
 
-        for i in trange(max_iterations):
+        for i in trange(max_iterations, leave=False):
             if not self.areas:
                 break
 
@@ -348,13 +348,3 @@ def reconstruct_image_from_file(compressed_image_file: str) -> Image:
 
     image_data = reconstruct_image_data(data)
     return Image.fromarray(image_data)
-
-
-# TODO: Create benchmark (compression ratio)
-# penguins: 4 MB jpg, 30 MB png and 0.5 MB using quad tree compression (80,000 iterations)
-
-# Benchmark:
-# Measure difficulty of image (entropy / randomness of image)
-# Measure similarity to original
-
-# TODO: Add credit for images
