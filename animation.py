@@ -21,7 +21,9 @@ def animate_subdivision(image_path: str, iteration_counts: list):
         Image.fromarray(compressed_image).save(f"animation/frame_{frame:0>4}.jpg")
 
 
-# ffmpeg -framerate 2 -s 1500x1000 -i animation/frame_%04d.jpg -vcodec libx264 -pix_fmt yuv420p animation/animation.mp4
+# Command to convert the frames to a video:
+# (Sometimes the scale parameter needs to be changed)
+# ffmpeg -framerate 2 -i animation/frame_%04d.jpg -vf scale=1200:-1 -vcodec libx264 -pix_fmt yuv420p animation/animation.mp4
 
 
 iteration_counts = [0, *range(10), *range(20, 100, 10), 200, 300, 500, 1000, *range(2000, 20000, 1000), 80000, 80000]
