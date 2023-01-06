@@ -1,11 +1,12 @@
-
 # Path Handling
 import os.path
 from pathlib import Path
 
 # Entropy calculation
+import matplotlib.pyplot as plt
 from skimage.filters.rank import entropy as sk_entropy
 from skimage.morphology import disk as sk_disk
+from skimage.exposure import histogram as sk_histogram
 from skimage.color import rgb2gray
 
 # Image processing and maths
@@ -14,7 +15,7 @@ import math
 from PIL import Image
 import quad_tree_compression as qtc
 
-# "Virtual files" for estimating size of image
+# "Virtual files" for estimating size of the images
 from io import BytesIO
 
 # String formatting
@@ -52,11 +53,23 @@ def compute_image_similarity(image_a: np.array, image_b: np.array) -> float:
     return 1 - mean_average_error(image_a, image_b) / 255
 
 
-def compute_image_entropy(image: np.array, radius=5) -> float:
+def compute_mean_local_entropy(image: np.array, radius=5) -> float:
     gray = (rgb2gray(image) * 255).astype(np.uint8)
     local_entropy = sk_entropy(gray, sk_disk(radius))
     entropy = np.mean(local_entropy)
     return float(entropy)
+
+
+def compute_channel_histogram_entropy(image_channel: np.array) -> float:
+    histogram, _ = sk_histogram(image_channel, nbins=256, source_range="dtype")
+    relative_occurrence = histogram / histogram.sum()
+    return -(relative_occurrence * np.ma.log2(relative_occurrence)).sum()
+
+
+def compute_histogram_entropy(image: np.array) -> float:
+    return (compute_channel_histogram_entropy(image[:, :, 0])
+            + compute_channel_histogram_entropy(image[:, :, 1])
+            + compute_channel_histogram_entropy(image[:, :, 2])) / 3
 
 
 def benchmark_image(image_path: str, iteration_counts: list):
@@ -75,12 +88,17 @@ def benchmark_image(image_path: str, iteration_counts: list):
     print()
     print(tabulate([
         ["PNG", f"{(png_size / 1000):,.1f}"],
-        ["JPG (90% quality)",  f"{(jpg_size / 1000):,.1f}"]
+        ["JPG (90% quality)", f"{(jpg_size / 1000):,.1f}"]
     ], headers=["File Type", "Size (KB)"], stralign="right"))
 
-    entropy = compute_image_entropy(image_data)
+    local_entropy = compute_mean_local_entropy(image_data)
+    histogram_entropy = compute_histogram_entropy(image_data)
     print()
-    print(tabulate([["Entropy", f"{entropy:.3f}"]]))
+    print("Dimensions of difficulty (0 = empty image; the higher the more difficult)")
+    print(tabulate([
+        ["Mean Local Entropy", f"{local_entropy:.3f}"],
+        ["Histogram Entropy", f"{histogram_entropy:.3f}"]
+    ]))
 
     compressor = qtc.ImageCompressor(image_data)
 
@@ -136,3 +154,6 @@ if __name__ == '__main__':
     benchmark_image("input/hiking.jpg", iteration_counts=detail_levels)
     benchmark_image("input/sunset.jpg", iteration_counts=detail_levels)
     benchmark_image("input/computer.jpg", iteration_counts=detail_levels)
+
+
+# TODO: Add totally empty image to the examples

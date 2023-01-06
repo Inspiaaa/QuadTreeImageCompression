@@ -1,10 +1,16 @@
-import math
-import lzma
+# Image processing
 import numpy as np
-from io import BytesIO
 from PIL import Image
-from tqdm import trange
+import math
+
 from sortedcontainers import SortedListWithKey
+
+# Progress bar
+from tqdm import trange
+
+# Binary encoding and compression
+from io import BytesIO
+import lzma
 
 
 # QuadTree data structures
@@ -81,6 +87,22 @@ class QuadTreeNode:
         end_x = start_x + width
         end_y = start_y + height
         image_data[start_y: end_y, start_x: end_x] = self.color
+
+    def use_average_leaf_color(self):
+        if not self.is_subdivided:
+            return
+
+        self.bottom_left_node.use_average_leaf_color()
+        self.bottom_right_node.use_average_leaf_color()
+        self.top_left_node.use_average_leaf_color()
+        self.top_right_node.use_average_leaf_color()
+
+        self.color = tuple(np.mean([
+            self.bottom_left_node.color,
+            self.bottom_right_node.color,
+            self.top_left_node.color,
+            self.top_right_node.color
+        ], axis=0))
 
 
 class CompressNode (QuadTreeNode):
@@ -313,7 +335,7 @@ def compress_and_encode_image_data(
     return compressor.encode_to_binary()
 
 
-def reconstruct_image_data(data: bytes) -> np.array:
+def reconstruct_quadtree(data: bytes) -> ReconstructNode:
     width, height, subdivided_flags, colors = decode_image_data(data)
 
     # The ReconstructNode requires these to be reversed for performance reasons.
@@ -321,9 +343,16 @@ def reconstruct_image_data(data: bytes) -> np.array:
     colors = list(reversed(colors))
 
     image_data = np.zeros((height, width, 3), dtype=np.uint8)
-    ReconstructNode((0, 0), (width, height), subdivided_flags, colors).draw(image_data)
-    return image_data
+    return ReconstructNode((0, 0), (width, height), subdivided_flags, colors)
 
+
+def reconstruct_image_data(data: bytes) -> np.array:
+    tree = reconstruct_quadtree(data)
+    width, height = tree.size
+
+    image_data = np.zeros((height, width, 3), dtype=np.uint8)
+    tree.draw(image_data)
+    return image_data
 
 # Simpler API
 
