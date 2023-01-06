@@ -1,5 +1,4 @@
 # Path Handling
-import os.path
 from pathlib import Path
 
 # Entropy calculation
@@ -94,7 +93,7 @@ def benchmark_image(image_path: str, iteration_counts: list):
     local_entropy = compute_mean_local_entropy(image_data)
     histogram_entropy = compute_histogram_entropy(image_data)
     print()
-    print("Dimensions of difficulty (0 = empty image; the higher the more difficult)")
+    print("Metrics of difficulty (0 = empty image; the higher the more difficult):")
     print(tabulate([
         ["Mean Local Entropy", f"{local_entropy:.3f}"],
         ["Histogram Entropy", f"{histogram_entropy:.3f}"]
@@ -108,11 +107,15 @@ def benchmark_image(image_path: str, iteration_counts: list):
         compressor.add_detail(iteration_count - last_iteration_count)
         last_iteration_count = iteration_count
 
-        compressed_size = len(compressor.encode_to_binary())
-        compressed_image_data = compressor.draw()
-        Image.fromarray(compressed_image_data).save(os.path.join(f"output/{image_name}_{iteration_count}.jpg"))
+        compressed_data = compressor.encode_to_binary()
+        with open(f"output/{image_name}_{iteration_count}_qt.qid", "wb") as file:
+            file.write(compressed_data)
 
-        error = mean_average_error(image_data, compressed_image_data)
+        compressed_size = len(compressed_data)
+        compressed_image = compressor.draw()
+        Image.fromarray(compressed_image).save(f"output/{image_name}_{iteration_count}.jpg")
+
+        error = mean_average_error(image_data, compressed_image)
         size_reduction_png = (png_size - compressed_size) / png_size
         size_reduction_jpg = (jpg_size - compressed_size) / jpg_size
         compression_factor_png = png_size / compressed_size
