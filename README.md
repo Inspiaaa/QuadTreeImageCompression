@@ -4,7 +4,7 @@ This library implements an image compression algorithm that is based on quadtree
 
 Features
 
-- **Compressing** images and rendering the simplified version
+- **Compressing** images and **rendering** the simplified version
 
 - **Encoding** the compressed data to a compact binary representation
 
@@ -14,7 +14,7 @@ The algorithm works by starting with an empty image and **incrementally adding d
 
 https://user-images.githubusercontent.com/28511584/211117608-29ff4349-64de-4250-a7fa-931b76a1392b.mp4
 
-How does the algorithm determine the **amount of detail** in a given quad region? The metric used is the standard deviation of the colors of the pixels in the region multiplied by the size of the region (simply the number of pixels `width * height`). If all the pixels have the same color, then the standard deviation is 0, meaning that it does not need to be divided any further. If there are many different colors over a large area, than the detail metric will have a high value.
+How does the algorithm determine the **amount of detail** in a given quad region? The metric used is the** standard deviation** of the colors of the pixels in the region multiplied by the **size** of the region (simply the number of pixels `width * height`). If all the pixels have the same color, then the standard deviation is 0, meaning that it does not need to be divided any further. If there are many different colors over a large area, than the detail metric will have a high value.
 
 ## Examples
 
@@ -30,7 +30,7 @@ To use the quadtree image compression algorithm, simply copy the `quad_tree_comp
 
 The `quad_tree_compression` file provides easy helper functions for performing common operations (such as compressing and loading images) but also gives you access to the underlying classes.
 
-Compressing and loading an image:
+**Compressing and loading an image:**
 
 ```python
 from quad_tree_compression import compress_image_file, reconstruct_image_from_file
@@ -43,7 +43,7 @@ image = reconstruct_image_from_file("output/mountain_qt.qid")
 image.show()
 ```
 
-Using the compressed image data (a numpy array) directly:
+**Using the compressed image data (a numpy array) directly:**
 
 ```python
 from quad_tree_compression import compress_image_data
@@ -62,7 +62,7 @@ compressed_image = Image.fromarray(compressed_data)
 compressed_image.show()
 ```
 
-Working with the binary representation directly:
+**Working with the binary representation directly:**
 
 ```python
 from quad_tree_compression import compress_and_encode_image_data, reconstruct_image_data
@@ -84,7 +84,7 @@ compressed_image = Image.fromarray(compressed_image_data)
 compressed_image.show()
 ```
 
-Advanced: interacting with the image compressing class directly:
+**Advanced: interacting with the image compressing class directly:**
 
 ```python
 from quad_tree_compression import ImageCompressor
@@ -113,7 +113,7 @@ compressor.add_detail(50_000)
 compressed_binary = compressor.encode_to_binary()
 ```
 
-Advanced: Interacting with the underlying quadtree datastructure:
+**Advanced: interacting with the underlying quadtree datastructure:**
 
 Internally, there are three classes that are used for compressing and reconstructing images. The base class `QuadTreeNode` takes care of positioning, sizing and subdividing. When compressing the image, the `CompressNode` class is used (which inherits from `QuadTreeNode`). When reconstructing the image, the `ReconstructNode` class is used (which also inherits from `QuadTreeNode`).
 
@@ -143,5 +143,24 @@ tree = reconstruct_quadtree(compressed_binary_data)
 print(tree)
 ```
 
-Binary representation
-Benchmark
+## Binary Representation
+
+This library uses a **custom binary representation** to minimise the output file size. To reconstruct the image, it needs to store the structure of the quadtree (which nodes are subdivided, their positions, ...) and the colors of the nodes.
+
+However, a few tricks can be used to minimise the resulting file size:
+
+- The algorithm only needs to store **whether each node in the tree is subdivided or not**. Their exact **position and size can be reconstructed** from the structure of the tree when loading the tree. The algorithm simply performs a preorder traversal over the quadtree, storing their `is_subdivided` flag. As this is a boolean, using an entire byte to store it would be incredibly inefficient, wasting 87.5% of the information. Therefore they are stored as individual bits of a **bitset**.
+
+- **Only the leaf nodes of the tree are drawn**. Therefore only the colors of these need to be stored.
+
+- The combined data can be further be compressed using **general-purpose compression algorithms** (`lzma` in this case).
+
+In the end, the following information is stored:
+
+- width of the image (4 bytes)
+
+- height of the image (4 bytes)
+
+- bitset containing the `is_subdivided` flags (4 bytes for the length, and 1 byte per 8 nodes)
+
+- colors of the leaf nodes (3 bytes for RGB per leaf node)
