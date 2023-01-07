@@ -153,7 +153,7 @@ However, a few tricks can be used to minimise the resulting file size:
 
 - **Only the leaf nodes of the tree are drawn**. Therefore only the colors of these need to be stored.
 
-- The combined data can be further be compressed using **general-purpose compression algorithms** (`lzma` in this case).
+- The combined data can be further compressed using **general-purpose compression algorithms** (`lzma` in this case).
 
 In the end, the following information is stored:
 
