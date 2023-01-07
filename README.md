@@ -157,10 +157,40 @@ However, a few tricks can be used to minimise the resulting file size:
 
 In the end, the following information is stored:
 
-- width of the image (4 bytes)
+- **width** of the image (4 bytes)
 
-- height of the image (4 bytes)
+- **height** of the image (4 bytes)
 
-- bitset containing the `is_subdivided` flags (4 bytes for the length, and 1 byte per 8 nodes)
+- **bitset** containing the `is_subdivided` flags (4 bytes for the length, and 1 byte per 8 nodes)
 
-- colors of the leaf nodes (3 bytes for RGB per leaf node)
+- **colors** of the leaf nodes (3 bytes for RGB per leaf node)
+
+
+
+## Benchmark
+
+How good is the quadtree algorithm at compressing images? To try answer this question, we can have a look at different aspects and test the algorithm on a variety of images.
+
+To measure the **compression ratio**, we can simply compare it with the size of a PNG or JPEG file storing the same image.
+
+Furthermore, it would be interesting to quantify the **compression "quality"**, seeing how similar it is to the original image. The benchmark (`benchmark.py`) uses the average of the **mean average error** (MAE) of each channel (red, green and blue). This value is easy to interpret, as it shows how far the red, green and blue values of each pixel are from the original on average (the color values range from 0-255).
+
+However, this value can be **misleading**, as some compressed images have a better (lower) MAE value than other compressed images which subjectively look better. For example, if an image only uses red colors (one of the three channels) the MAE at a low iteration count will have a comparatively small value. The MAE of an image that uses all three channels but was compressed using a higher iteration count may be higher (worse!) than that of the "simpler" image.
+
+Therefore it helps to estimate the **image difficulty**. There are two aspects that influence to how challenging an image is to compress:
+
+- The usage of a wide range of different **colors**, a high dynamic range, ..., which is measured as the **entropy of the histogram** of the image (more precisely: the average entropy of the histogram of each channel).
+
+- Furthermore, the complexity of the structures and arrangement of colors plays an important role. Although an image with white noise has the same entropy value regarding its histogram as a smooth gradient image, they are clearly not equally easy to compress. Therefore, the benchmark calculates the **local entropy of each region** in the image using `scikit-image` and computes the average.
+  
+  For example, this is the local entropy map of a picture of a mountain:
+  
+  ![](docs/mountain_entropy.jpg)
+
+
+
+TODO: Results
+
+TODO: Add reference at the examples for the benchmark
+
+TODO: Add license
