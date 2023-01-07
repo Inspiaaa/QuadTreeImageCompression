@@ -14,7 +14,7 @@ The algorithm works by starting with an empty image and **incrementally adding d
 
 https://user-images.githubusercontent.com/28511584/211117608-29ff4349-64de-4250-a7fa-931b76a1392b.mp4
 
-How does the algorithm determine the **amount of detail** in a given quad region? The metric used is the** standard deviation** of the colors of the pixels in the region multiplied by the **size** of the region (simply the number of pixels `width * height`). If all the pixels have the same color, then the standard deviation is 0, meaning that it does not need to be divided any further. If there are many different colors over a large area, than the detail metric will have a high value.
+How does the algorithm determine the **amount of detail** in a given quad region? The metric used is the **standard deviation** of the colors of the pixels in the region multiplied by the **size** of the region (simply the number of pixels `width * height`). If all the pixels have the same color, then the standard deviation is 0, meaning that it does not need to be divided any further. If there are many different colors over a large area, than the detail metric will have a high value.
 
 ## Examples
 
