@@ -81,6 +81,13 @@ def benchmark_image(image_path: str, iteration_counts: list):
     image = Image.open(image_path)
     image_data = np.array(image, dtype=np.uint8)
 
+    print()
+    print(tabulate([
+        ["Width", image.width],
+        ["Height", image.height],
+        ["Resolution", f"{image.width * image.height / 1_000_000 :,.1f}MP"],
+    ], stralign="right", numalign="right"))
+
     png_size = get_image_file_size(image, "png")
     jpg_size = get_image_file_size(image, "jpeg")
 
@@ -93,7 +100,7 @@ def benchmark_image(image_path: str, iteration_counts: list):
     local_entropy = compute_mean_local_entropy(image_data)
     histogram_entropy = compute_histogram_entropy(image_data)
     print()
-    print("Metrics of difficulty (0 = empty image; the higher the more difficult):")
+    print("Metrics of difficulty (0 = empty image; the higher, the more difficult):")
     print(tabulate([
         ["Mean Local Entropy", f"{local_entropy:.3f}"],
         ["Histogram Entropy", f"{histogram_entropy:.3f}"]
