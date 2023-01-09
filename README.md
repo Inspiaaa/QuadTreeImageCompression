@@ -159,13 +159,13 @@ However, a few tricks can be used to minimise the resulting file size:
 
 In the end, the following information is stored:
 
-- **width** of the image (4 bytes)
+- **Width** of the image (4 bytes)
 
-- **height** of the image (4 bytes)
+- **Height** of the image (4 bytes)
 
-- **bitset** containing the `is_subdivided` flags (4 bytes for the length, and 1 byte per 8 nodes)
+- **Bitset** containing the `is_subdivided` flags (4 bytes for the length, and 1 byte per 8 nodes)
 
-- **colors** of the leaf nodes (3 bytes for RGB per leaf node)
+- **Colors** of the leaf nodes (3 bytes for RGB per leaf node)
 
 ## Benchmark
 
