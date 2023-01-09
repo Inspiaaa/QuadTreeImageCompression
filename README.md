@@ -26,7 +26,7 @@ How does the algorithm determine the **amount of detail** in a given quad region
 
 ## Usage
 
-To use the quadtree image compression algorithm, simply copy the `quad_tree_compression.py` and import into your scripts. It requires `numpy`, `Pillow`, `tqdm` and `sortedcontainers` to be installed. If you also want to run the image benchmark (`benchmark.py`), you will also need `scikit-image` which is used for analysing the input image.
+To use the quadtree image compression algorithm, simply copy the `quad_tree_compression.py` and import into your scripts. It requires `numpy`, `Pillow`, `tqdm` and `sortedcontainers` to be installed. If you also want to run the image benchmark (`benchmark.py`), you will also need `tabulate` and `scikit-image` (which is used for analysing the input image).
 
 The `quad_tree_compression` file provides easy helper functions for performing common operations (such as compressing and loading images) but also gives you access to the underlying classes.
 
@@ -149,7 +149,7 @@ This library uses a **custom binary representation** to minimise the output file
 
 However, a few tricks can be used to minimise the resulting file size:
 
-- The algorithm only needs to store **whether each node in the tree is subdivided or not**. Their exact **position and size can be reconstructed** from the structure of the tree when loading the tree. The algorithm simply performs a preorder traversal over the quadtree, storing their `is_subdivided` flag. As this is a boolean, using an entire byte to store it would be incredibly inefficient, wasting 87.5% of the information. Therefore they are stored as individual bits of a **bitset**.
+- The algorithm only needs to store **whether each node in the tree is subdivided or not**. Their exact **position and size can be reconstructed** from the structure of the tree when loading the tree. The algorithm simply performs a preorder traversal over the quadtree, storing their `is_subdivided` flag. As this is a boolean, using an entire byte to store it would be incredibly inefficient, wasting 87.5% of the space. Therefore they are stored as individual bits of a **bitset**.
 
 - **Only the leaf nodes of the tree are drawn**. Therefore only the colors of these need to be stored.
 
@@ -165,8 +165,6 @@ In the end, the following information is stored:
 
 - **colors** of the leaf nodes (3 bytes for RGB per leaf node)
 
-
-
 ## Benchmark
 
 How good is the quadtree algorithm at compressing images? To try answer this question, we can have a look at different aspects and test the algorithm on a variety of images.
@@ -181,13 +179,22 @@ Therefore it helps to estimate the **image difficulty**. There are two aspects t
 
 - The usage of a wide range of different **colors**, a high dynamic range, ..., which is measured as the **entropy of the histogram** of the image (more precisely: the average entropy of the histogram of each channel).
 
-- Furthermore, the complexity of the structures and arrangement of colors plays an important role. Although an image with white noise has the same entropy value regarding its histogram as a smooth gradient image, they are clearly not equally easy to compress. Therefore, the benchmark calculates the **local entropy of each region** in the image using `scikit-image` and computes the average.
+- Furthermore, the complexity of the structures and arrangement of colors plays an important role. Although an image with white noise has the same entropy value regarding its histogram as a smooth gradient image, they are clearly not equally easy to compress.
+  
+  | Noise                   | Gradient               |
+  | ----------------------- | ---------------------- |
+  | ![](docs/noise.jpg)     | ![](docs/gradient.jpg) |
+  | Histogram Entropy: 7.99 | Histogram Entropy: 8.0 |
+  
+  Therefore, the benchmark calculates the **local entropy of each region** in the image using `scikit-image` and computes the average.
   
   For example, this is the local entropy map of a picture of a mountain:
   
   ![](docs/mountain_entropy.jpg)
+  
+  The mean local entropy score calculated from this image is 1.339.
 
-
+### Benchmark Results
 
 TODO: Results
 
