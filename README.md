@@ -1,5 +1,3 @@
-# Quadtree Image Compression
-
 This library implements an image compression algorithm that is based on quadtrees. It can radically reduce the size of images while still preserving detail.
 
 Features
@@ -18,7 +16,7 @@ How does the algorithm determine the **amount of detail** in a given quad region
 
 ## Examples
 
-| 100 Iterations           | 1000 Iterations           | 20000 Iterations           |
+| 100 Iterations           | 1,000 Iterations          | 20,000 Iterations          |
 | ------------------------ | ------------------------- | -------------------------- |
 | ![](docs/night_100.jpg)  | ![](docs/night_1000.jpg)  | ![](docs/night_20000.jpg)  |
 | ![](docs/plant_100.jpg)  | ![](docs/plant_1000.jpg)  | ![](docs/plant_20000.jpg)  |
@@ -201,7 +199,297 @@ Therefore it helps to estimate the **image difficulty**. There are two aspects t
 
 ### Benchmark Results
 
-TODO: Results
+| Original             | 80,000 Iterations          |
+| -------------------- | -------------------------- |
+| ![](docs/branch.jpg) | ![](docs/branch_80000.jpg) |
+
+```
+----------  ------
+     Width    3712
+    Height    4640
+Resolution  17.2MP
+----------  ------
+```
+
+Metrics of difficulty (0 = empty image; the higher, the more difficult):
+
+```
+------------------  -----
+Mean Local Entropy  4.305
+Histogram Entropy   7.607
+------------------  -----
+```
+
+```
+        File Type    Size (KB)
+-----------------  -----------
+              PNG     17,372.9
+JPG (90% quality)      3,811.6
+```
+
+```
+  Iterations    Compressed    Mean Average    Size Reduction    Size Reduction    Compression    Compression
+                 Size (KB)           Error           PNG (%)           JPG (%)     Factor PNG     Factor JPG
+------------  ------------  --------------  ----------------  ----------------  -------------  -------------
+         100          0.93           14.04             99.99             99.98       18720.8         4107.28
+        1000          7.68            8.79             99.96             99.8         2260.92         496.04
+       20000         93.09            5.76             99.46             97.56         186.63          40.95
+       80000        307.03            5.17             98.23             91.94          56.58          12.41
+```
+
+| Original               | 80,000 Iterations            |
+| ---------------------- | ---------------------------- |
+| ![](docs/mountain.jpg) | ![](docs/mountain_80000.jpg) |
+
+```
+----------  ------
+     Width    5472
+    Height    3648
+Resolution  20.0MP
+----------  ------
+```
+
+```
+------------------  -----
+Mean Local Entropy  1.339
+Histogram Entropy   6.69
+------------------  -----
+```
+
+```
+        File Type    Size (KB)
+-----------------  -----------
+              PNG      5,611.4
+JPG (90% quality)        993.6
+```
+
+```
+  Iterations    Compressed    Mean Average    Size Reduction    Size Reduction    Compression    Compression
+                 Size (KB)           Error           PNG (%)           JPG (%)     Factor PNG     Factor JPG
+------------  ------------  --------------  ----------------  ----------------  -------------  -------------
+         100          0.94            7.77             99.98             99.91        5995.12        1061.51
+        1000          7.85            4.15             99.86             99.21         714.65         126.54
+       20000        134               1.62             97.61             86.51          41.88           7.41
+       80000        471.68            1.01             91.59             52.53          11.9            2.11
+```
+
+| Original             | 80,000 Iterations          |
+| -------------------- | -------------------------- |
+| ![](docs/hiking.jpg) | ![](docs/hiking_80000.jpg) |
+
+```
+----------  ------
+     Width    3744
+    Height    5616
+Resolution  21.0MP
+----------  ------
+```
+
+```
+------------------  -----
+Mean Local Entropy  5.039
+Histogram Entropy   7.452
+------------------  -----
+```
+
+```
+        File Type    Size (KB)
+-----------------  -----------
+              PNG     34,908.6
+JPG (90% quality)      7,372.6
+```
+
+```
+  Iterations    Compressed    Mean Average    Size Reduction    Size Reduction    Compression    Compression
+                 Size (KB)           Error           PNG (%)           JPG (%)     Factor PNG     Factor JPG
+------------  ------------  --------------  ----------------  ----------------  -------------  -------------
+         100          0.92           19.67            100                99.99       38109.8         8048.69
+        1000          7.44           15.8              99.98             99.9         4694.54         991.47
+       20000        127.7            12.58             99.63             98.27         273.36          57.73
+       80000        469.73           11.36             98.65             93.63          74.32          15.7
+```
+
+| Original             | 80,000 Iterations          |
+| -------------------- | -------------------------- |
+| ![](docs/sunset.jpg) | ![](docs/sunset_80000.jpg) |
+
+```
+----------  ------
+     Width    3957
+    Height    6240
+Resolution  24.7MP
+----------  ------
+```
+
+```
+------------------  -----
+Mean Local Entropy  2.475
+Histogram Entropy   5.321
+------------------  -----
+```
+
+```
+        File Type    Size (KB)
+-----------------  -----------
+              PNG     15,051.9
+JPG (90% quality)      3,259.4
+```
+
+```
+  Iterations    Compressed    Mean Average    Size Reduction    Size Reduction    Compression    Compression
+                 Size (KB)           Error           PNG (%)           JPG (%)     Factor PNG     Factor JPG
+------------  ------------  --------------  ----------------  ----------------  -------------  -------------
+         100          0.86            4.78             99.99             99.97       17502.3         3790.03
+        1000          5.75            2.99             99.96             99.82        2618.64         567.05
+       20000         71.04            2.62             99.53             97.82         211.87          45.88
+       80000        254.64            2.55             98.31             92.19          59.11          12.8
+```
+
+| Original              | 80,000 Iterations           |
+| --------------------- | --------------------------- |
+| ![](docs/squares.png) | ![](docs/squares_80000.jpg) |
+
+```
+----------  ------
+     Width    5472
+    Height    3648
+Resolution  20.0MP
+----------  ------
+```
+
+```
+------------------  -----
+Mean Local Entropy  0.014
+Histogram Entropy   1.374
+------------------  -----
+```
+
+```
+        File Type    Size (KB)
+-----------------  -----------
+              PNG         68.4
+JPG (90% quality)        393.4
+```
+
+```
+  Iterations    Compressed    Mean Average    Size Reduction    Size Reduction    Compression    Compression
+                 Size (KB)           Error           PNG (%)           JPG (%)     Factor PNG     Factor JPG
+------------  ------------  --------------  ----------------  ----------------  -------------  -------------
+         100          0.56            5.24             99.19             99.86         122.97         707.58
+        1000          1.58            0.62             97.69             99.6           43.38         249.63
+       20000          3.58            0                94.77             99.09          19.12         110.01
+       80000          3.58            0                94.77             99.09          19.12         110.01
+```
+
+| Original            | 80,000 Iterations         |
+| ------------------- | ------------------------- |
+| ![](docs/night.jpg) | ![](docs/night_80000.jpg) |
+
+```
+----------  ------
+     Width    4160
+    Height    6240
+Resolution  26.0MP
+----------  ------
+```
+
+```
+------------------  -----
+Mean Local Entropy  3.438
+Histogram Entropy   5.722
+------------------  -----
+```
+
+```
+        File Type    Size (KB)
+-----------------  -----------
+              PNG     25,385.6
+JPG (90% quality)      3,886.6
+```
+
+```
+  Iterations    Compressed    Mean Average    Size Reduction    Size Reduction    Compression    Compression
+                 Size (KB)           Error           PNG (%)           JPG (%)     Factor PNG     Factor JPG
+------------  ------------  --------------  ----------------  ----------------  -------------  -------------
+         100          0.88            7.73            100                99.98       28716.8         4396.62
+        1000          6.64            4.54             99.97             99.83        3825.44         585.69
+       20000         83.59            2.73             99.67             97.85         303.7           46.5
+       80000        286.11            2.4              98.87             92.64          88.73          13.58
+```
+
+| Original            | 80,000 Iterations         |
+| ------------------- | ------------------------- |
+| ![](docs/plant.jpg) | ![](docs/plant_80000.jpg) |
+
+```
+----------  ------
+     Width    4000
+    Height    6000
+Resolution  24.0MP
+----------  ------
+```
+
+```
+------------------  -----
+Mean Local Entropy  2
+Histogram Entropy   5.868
+------------------  -----
+```
+
+```
+        File Type    Size (KB)
+-----------------  -----------
+              PNG     13,039.2
+JPG (90% quality)      1,774.4
+```
+
+```
+  Iterations    Compressed    Mean Average    Size Reduction    Size Reduction    Compression    Compression
+                 Size (KB)           Error           PNG (%)           JPG (%)     Factor PNG     Factor JPG
+------------  ------------  --------------  ----------------  ----------------  -------------  -------------
+         100          0.83           11.48             99.99             99.95       15672.1         2132.64
+        1000          7.06            6.8              99.95             99.6         1847.96         251.47
+       20000        128.21            2.66             99.02             92.77         101.7           13.84
+       80000        485.07            1.67             96.28             72.66          26.88           3.66
+```
+
+| Original               | 80,000 Iterations            |
+| ---------------------- | ---------------------------- |
+| ![](docs/penguins.jpg) | ![](docs/penguins_80000.jpg) |
+
+```
+----------  ------
+     Width    4039
+    Height    6058
+Resolution  24.5MP
+----------  ------
+```
+
+```
+------------------  -----
+Mean Local Entropy  3.044
+Histogram Entropy   6.514
+------------------  -----
+```
+
+```
+        File Type    Size (KB)
+-----------------  -----------
+              PNG     23,573.7
+JPG (90% quality)      5,023.5
+```
+
+```
+  Iterations    Compressed    Mean Average    Size Reduction    Size Reduction    Compression    Compression
+                 Size (KB)           Error           PNG (%)           JPG (%)     Factor PNG     Factor JPG
+------------  ------------  --------------  ----------------  ----------------  -------------  -------------
+         100          0.92           20.28            100                99.98       25735.5         5484.15
+        1000          7.46           12.98             99.97             99.85        3161.71         673.75
+       20000        132.92            9.16             99.44             97.35         177.36          37.79
+       80000        504.67            7.21             97.86             89.95          46.71           9.95
+```
+
+
 
 TODO: Add reference at the examples for the benchmark
 

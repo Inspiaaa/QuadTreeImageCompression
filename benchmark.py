@@ -2,7 +2,6 @@
 from pathlib import Path
 
 # Entropy calculation
-import matplotlib.pyplot as plt
 from skimage.filters.rank import entropy as sk_entropy
 from skimage.morphology import disk as sk_disk
 from skimage.exposure import histogram as sk_histogram
@@ -71,7 +70,7 @@ def compute_histogram_entropy(image: np.array) -> float:
             + compute_channel_histogram_entropy(image[:, :, 2])) / 3
 
 
-def benchmark_image(image_path: str, iteration_counts: list):
+def benchmark_image(image_path: str, iteration_counts: list, tablefmt="simple"):
     image_name = Path(image_path).stem
     title = f"Image '{image_name}'"
     print("=" * len(title))
@@ -86,7 +85,7 @@ def benchmark_image(image_path: str, iteration_counts: list):
         ["Width", image.width],
         ["Height", image.height],
         ["Resolution", f"{image.width * image.height / 1_000_000 :,.1f}MP"],
-    ], stralign="right", numalign="right"))
+    ], stralign="right", numalign="right", tablefmt=tablefmt))
 
     png_size = get_image_file_size(image, "png")
     jpg_size = get_image_file_size(image, "jpeg")
@@ -95,7 +94,7 @@ def benchmark_image(image_path: str, iteration_counts: list):
     print(tabulate([
         ["PNG", f"{(png_size / 1000):,.1f}"],
         ["JPG (90% quality)", f"{(jpg_size / 1000):,.1f}"]
-    ], headers=["File Type", "Size (KB)"], stralign="right"))
+    ], headers=["File Type", "Size (KB)"], stralign="right", tablefmt=tablefmt))
 
     local_entropy = compute_mean_local_entropy(image_data)
     histogram_entropy = compute_histogram_entropy(image_data)
@@ -104,7 +103,7 @@ def benchmark_image(image_path: str, iteration_counts: list):
     print(tabulate([
         ["Mean Local Entropy", f"{local_entropy:.3f}"],
         ["Histogram Entropy", f"{histogram_entropy:.3f}"]
-    ]))
+    ], tablefmt=tablefmt))
 
     compressor = qtc.ImageCompressor(image_data)
 
@@ -147,7 +146,7 @@ def benchmark_image(image_path: str, iteration_counts: list):
         "Size Reduction\nJPG (%)",
         "Compression\nFactor PNG",
         "Compression\nFactor JPG",
-    ], stralign="right"))
+    ], stralign="right", tablefmt=tablefmt))
     print()
     print()
     print()
@@ -155,15 +154,16 @@ def benchmark_image(image_path: str, iteration_counts: list):
 
 if __name__ == '__main__':
     detail_levels = [100, 1000, 20000, 80000]
-    benchmark_image("input/flowers.jpg", iteration_counts=detail_levels)
-    benchmark_image("input/mountain.jpg", iteration_counts=detail_levels)
-    benchmark_image("input/night.jpg", iteration_counts=detail_levels)
-    benchmark_image("input/penguins.jpg", iteration_counts=detail_levels)
-    benchmark_image("input/plant.jpg", iteration_counts=detail_levels)
-    benchmark_image("input/squares.png", iteration_counts=detail_levels)
-    benchmark_image("input/hiking.jpg", iteration_counts=detail_levels)
-    benchmark_image("input/sunset.jpg", iteration_counts=detail_levels)
-    benchmark_image("input/computer.jpg", iteration_counts=detail_levels)
+    tablefmt = "simple"
+    benchmark_image("input/branch.jpg", iteration_counts=detail_levels, tablefmt=tablefmt)
+    benchmark_image("input/mountain.jpg", iteration_counts=detail_levels, tablefmt=tablefmt)
+    benchmark_image("input/night.jpg", iteration_counts=detail_levels, tablefmt=tablefmt)
+    benchmark_image("input/penguins.jpg", iteration_counts=detail_levels, tablefmt=tablefmt)
+    benchmark_image("input/plant.jpg", iteration_counts=detail_levels, tablefmt=tablefmt)
+    benchmark_image("input/squares.png", iteration_counts=detail_levels, tablefmt=tablefmt)
+    benchmark_image("input/hiking.jpg", iteration_counts=detail_levels, tablefmt=tablefmt)
+    benchmark_image("input/sunset.jpg", iteration_counts=detail_levels, tablefmt=tablefmt)
+    benchmark_image("input/computer.jpg", iteration_counts=detail_levels, tablefmt=tablefmt)
 
 
 # TODO: Add totally empty image to the examples
