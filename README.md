@@ -2,7 +2,7 @@
 
 This library implements an image compression algorithm that is based on quadtrees. It can radically reduce the size of images while still preserving detail.
 
-Features
+Features:
 
 - **Compressing** images and **rendering** the simplified version
 
@@ -14,7 +14,7 @@ The algorithm works by starting with an empty image and **incrementally adding d
 
 https://user-images.githubusercontent.com/28511584/211117608-29ff4349-64de-4250-a7fa-931b76a1392b.mp4
 
-How does the algorithm determine the **amount of detail** in a given quad region? The metric used is the **standard deviation** of the colors of the pixels in the region multiplied by the **size** of the region (simply the number of pixels `width * height`). If all the pixels have the same color, then the standard deviation is 0, meaning that it does not need to be divided any further. If there are many different colors over a large area, than the detail metric will have a high value.
+How does the algorithm determine the **amount of detail** in a given quad region? The metric used is the **standard deviation** of the colors of the pixels in the region, multiplied by the **size** of the region (simply the number of pixels `width * height`). If all the pixels have the same color, then the standard deviation is 0, meaning that it does not need to be divided any further. If there are many different colors over a large area, than the detail metric will have a high value.
 
 ## Examples
 
@@ -28,7 +28,7 @@ To see the compressed size of these images and other interesting facts about the
 
 ## Usage
 
-To use the quadtree image compression algorithm, simply copy the `quad_tree_compression.py` file and import it into your scripts. It requires `numpy`, `Pillow`, `tqdm` and `sortedcontainers` to be installed. If you also want to run the image benchmark (`benchmark.py`), you will also need `tabulate` and `scikit-image` (which is used for analysing the input image).
+To use the quadtree image compression algorithm, simply copy the `quad_tree_compression.py` file and import it into your scripts. It requires `numpy`, `Pillow`, `tqdm` and `sortedcontainers` to be installed. If you also want to run the image benchmark (`benchmark.py`), in addition you will need `tabulate` and `scikit-image` (which is used for analysing the input image).
 
 The `quad_tree_compression` file provides easy helper functions for performing common operations (such as compressing and loading images) but also gives you access to the underlying classes.
 
@@ -115,7 +115,7 @@ compressor.add_detail(50_000)
 compressed_binary = compressor.encode_to_binary()
 ```
 
-**Advanced: interacting with the underlying quadtree datastructure:**
+**Advanced: interacting with the underlying quadtree data structure:**
 
 Internally, there are three classes that are used for compressing and reconstructing images. The base class `QuadTreeNode` takes care of positioning, sizing and subdividing. When compressing the image, the `CompressNode` class is used (which inherits from `QuadTreeNode`). When reconstructing the image, the `ReconstructNode` class is used (which also inherits from `QuadTreeNode`).
 
@@ -157,7 +157,7 @@ However, a few tricks can be used to minimise the resulting file size:
 
 - The combined data can be further compressed using **general-purpose compression algorithms** (`lzma` in this case).
 
-In the end, the following information is stored:
+In the end, the following information is stored (before general-purpose compression):
 
 - **Width** of the image (4 bytes)
 
@@ -169,15 +169,15 @@ In the end, the following information is stored:
 
 ## Benchmark
 
-How good is the quadtree algorithm at compressing images? To try answer this question, we can have a look at different aspects and test the algorithm on a variety of images.
+How good is the quadtree algorithm at compressing images? To try to answer this question, we can have a look at different aspects and test the algorithm on a variety of images.
 
-To measure the **compression ratio**, we can simply compare it with the size of a PNG or JPEG file storing the same image.
+To measure the **compression ratio**, we can compare it with the size of a PNG or JPEG file storing the same image.
 
 Furthermore, it would be interesting to quantify the **compression "quality"**, seeing how similar it is to the original image. The benchmark (`benchmark.py`) uses the average of the **mean absolute error** (MAE) of each channel (red, green and blue). This value is easy to interpret, as it shows how far the red, green and blue values of each pixel are from the original on average (the color values range from 0-255).
 
 However, this value can be **misleading**, as some compressed images have a better (lower) MAE value than other compressed images which subjectively look better. For example, if an image only uses red colors (one of the three channels) the MAE at a low iteration count will have a comparatively small value. The MAE of an image that uses all three channels but was compressed using a higher iteration count may be higher (worse!) than that of the "simpler" image.
 
-Therefore it helps to estimate the **image difficulty**. There are two aspects that influence to how challenging an image is to compress:
+Therefore it helps to estimate the **image difficulty**. There are two aspects that influence how challenging an image is to compress:
 
 - The usage of a wide range of different **colors**, a high dynamic range, ..., which is measured as the **entropy of the histogram** of the image (more precisely: the average entropy of the histogram of each channel).
 
@@ -493,4 +493,6 @@ JPG (90% quality)      5,023.5
        80000        504.67            7.21             97.86             89.95          46.71           9.95
 ```
 
-TODO: Add license
+## Credits
+
+All sample images sourced and credited to Unsplash. See `input/credits.txt` for details.
