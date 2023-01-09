@@ -24,9 +24,11 @@ How does the algorithm determine the **amount of detail** in a given quad region
 | ![](docs/plant_100.jpg)  | ![](docs/plant_1000.jpg)  | ![](docs/plant_20000.jpg)  |
 | ![](docs/sunset_100.jpg) | ![](docs/sunset_1000.jpg) | ![](docs/sunset_20000.jpg) |
 
+To see the compressed size of these images and other interesting facts about them, scroll down to the *Benchmark* section.
+
 ## Usage
 
-To use the quadtree image compression algorithm, simply copy the `quad_tree_compression.py` and import into your scripts. It requires `numpy`, `Pillow`, `tqdm` and `sortedcontainers` to be installed. If you also want to run the image benchmark (`benchmark.py`), you will also need `tabulate` and `scikit-image` (which is used for analysing the input image).
+To use the quadtree image compression algorithm, simply copy the `quad_tree_compression.py` file and import it into your scripts. It requires `numpy`, `Pillow`, `tqdm` and `sortedcontainers` to be installed. If you also want to run the image benchmark (`benchmark.py`), you will also need `tabulate` and `scikit-image` (which is used for analysing the input image).
 
 The `quad_tree_compression` file provides easy helper functions for performing common operations (such as compressing and loading images) but also gives you access to the underlying classes.
 
@@ -490,7 +492,5 @@ JPG (90% quality)      5,023.5
        20000        132.92            9.16             99.44             97.35         177.36          37.79
        80000        504.67            7.21             97.86             89.95          46.71           9.95
 ```
-
-TODO: Add reference at the examples for the benchmark
 
 TODO: Add license
