@@ -188,7 +188,12 @@ Therefore it helps to estimate the **image difficulty**. There are two aspects t
   
   Therefore, the benchmark calculates the **local entropy of each region** in the image using `scikit-image` and computes the average.
   
-  For example, this is the local entropy map of a picture of a mountain:
+  | Noise                       | Gradient                       |
+  | --------------------------- | ------------------------------ |
+  | ![](docs/noise_entropy.jpg) | ![](docs/gradient_entropy.jpg) |
+  | Mean Local Entropy: 6.02    | Mean Local Entropy: 3.26       |
+  
+  The following image shows local entropy map of a more realistic test image depicting a mountain:
   
   ![](docs/mountain_entropy.jpg)
   
