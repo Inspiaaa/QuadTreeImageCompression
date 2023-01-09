@@ -195,7 +195,7 @@ Therefore it helps to estimate the **image difficulty**. There are two aspects t
   | ![](docs/noise_entropy.jpg) | ![](docs/gradient_entropy.jpg) |
   | Mean Local Entropy: 6.02    | Mean Local Entropy: 3.26       |
   
-  The following image shows local entropy map of a more realistic test image depicting a mountain:
+  The following image shows the local entropy map of a more realistic test image depicting a mountain:
   
   ![](docs/mountain_entropy.jpg)
   
