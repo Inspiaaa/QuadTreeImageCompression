@@ -1,3 +1,5 @@
+# Quadtree Image Compression
+
 This library implements an image compression algorithm that is based on quadtrees. It can radically reduce the size of images while still preserving detail.
 
 Features
@@ -488,8 +490,6 @@ JPG (90% quality)      5,023.5
        20000        132.92            9.16             99.44             97.35         177.36          37.79
        80000        504.67            7.21             97.86             89.95          46.71           9.95
 ```
-
-
 
 TODO: Add reference at the examples for the benchmark
 
